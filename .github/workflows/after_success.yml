@@ -1,7 +1,9 @@
 name: After success
-push:
-    branches:
-      - $default-branch
+on:
+  workflow_run:
+    workflows: ['Build and test']
+    types:
+      - completed
 jobs:
   Pull-after-success-sh:
     runs-on: ubuntu-latest

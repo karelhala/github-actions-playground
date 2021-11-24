@@ -1,7 +1,9 @@
 name: Image release
-push:
-    branches:
-      - $default-branch
+on:
+  workflow_run:
+    workflows: ['Build and test']
+    types:
+      - completed
 jobs:
   Pull-image-release-sh:
     runs-on: ubuntu-latest
