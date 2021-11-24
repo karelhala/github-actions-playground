@@ -17,7 +17,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/scripts/*
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-release
   pull-jenkins:
     runs-on: ubuntu-latest
     steps:
@@ -32,13 +32,17 @@ jobs:
   Run-release-sh:
     needs: [pull-release, pull-jenkins]
     runs-on: ubuntu-latest
+    env:
+      REPO: git@github.com:karelhala/github-actions-playground-build.git
+      COMMIT_AUTHOR_USERNAME: GitHub actions
+      COMMIT_AUTHOR_EMAIL: actions@github.com
+
     steps:
       - uses: actions/checkout@v2
-      - run: echo "REPO=git@github.com:karelhala/github-actions-playground-build.git" >> $GITHUB_ENV
       - run: echo "TRAVIS_BRANCH=$GITHUB_REF_NAME" >> $GITHUB_ENV
       - run: echo "TRAVIS_BUILD_NUMBER=$GITHUB_JOB" >> $GITHUB_ENV
-      - run: echo "COMMIT_AUTHOR_USERNAME='GitHub actions'" >> $GITHUB_ENV
-      - run: echo "COMMIT_AUTHOR_EMAIL=actions@github.com" >> $GITHUB_ENV
+      - run: echo $TEST_ENV
+      - run: echo $GITHUB_RUN_ID
       - name: Add SSH key
         env:
             SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -52,7 +56,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/scripts/*
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-release
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/.travis/58231b16fdee45a03a4ee3cf94a9f2c3
@@ -62,5 +66,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}
+      - name: List scripts
+        run: ls -lah ./scripts
       - name: Run the deploy
-        run: scripts/release.sh
+        run: ${{ github.workspace }}/scripts/release.sh ci-beta
