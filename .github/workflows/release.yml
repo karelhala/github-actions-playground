@@ -39,6 +39,7 @@ jobs:
       - run: echo "TRAVIS_BUILD_NUMBER=$GITHUB_JOB" >> $GITHUB_ENV
       - run: echo "COMMIT_AUTHOR_USERNAME=$GITHUB_ACTOR" >> $GITHUB_ENV
       - run: echo "COMMIT_AUTHOR_EMAIL=$GITHUB_JOB" >> $GITHUB_ENV
+      - run: eval `ssh-agent -s`
       - run: ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
       - uses: actions/cache@v2
         with:
@@ -53,6 +54,5 @@ jobs:
         with:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}
-      - name: List files in the repository
-        run: |
-          ls -lah ${{ github.workspace }}
+      - name: Run the deploy
+        run: scripts/release.sh
