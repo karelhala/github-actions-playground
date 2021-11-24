@@ -29,21 +29,17 @@ jobs:
         with:
           path: ${{ github.workspace }}/.travis/58231b16fdee45a03a4ee3cf94a9f2c3
           key: ${{ github.sha }}
-  set-env:
+  Run-release-sh:
     needs: [pull-release, pull-jenkins]
     runs-on: ubuntu-latest
     steps:
-      - name: Repo url
-        run: echo "REPO=git@github.com:karelhala/github-actions-playground-build.git" >> $GITHUB_ENV
-      - name: Test repo url
-        run: echo ${{ env.REPO }}
-  Pull-release-sh:
-    needs: [set-env]
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/checkout@v2
-      - name: Test repo url
-        run: echo ${{ env.REPO }}
+      - run: echo "REPO=git@github.com:karelhala/github-actions-playground-build.git" >> $GITHUB_ENV
+      - run: echo "TRAVIS_BRANCH=$GITHUB_REF_NAME" >> $GITHUB_ENV
+      - run: echo "TRAVIS_BUILD_NUMBER=$GITHUB_JOB" >> $GITHUB_ENV
+      - run: echo "COMMIT_AUTHOR_USERNAME=$GITHUB_ACTOR" >> $GITHUB_ENV
+      - run: echo "COMMIT_AUTHOR_EMAIL=$GITHUB_JOB" >> $GITHUB_ENV
+      - run: ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/scripts/*
