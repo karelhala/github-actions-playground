@@ -1,0 +1,24 @@
+{
+  "name": "github-actions-playground",
+  "version": "1.0.0",
+  "description": "Test",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karelhala/github-actions-playground.git"
+  },
+  "author": "Karel Hala",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/karelhala/github-actions-playground/issues"
+  },
+  "homepage": "https://github.com/karelhala/github-actions-playground#readme",
+  "devDependencies": {
+    "webpack": "^5.64.3",
+    "webpack-cli": "^4.9.1"
+  }
+}
