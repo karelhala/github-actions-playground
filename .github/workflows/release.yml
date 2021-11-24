@@ -29,11 +29,21 @@ jobs:
         with:
           path: ${{ github.workspace }}/.travis/58231b16fdee45a03a4ee3cf94a9f2c3
           key: ${{ github.sha }}
-  Pull-release-sh:
+  set-env:
     needs: [pull-release, pull-jenkins]
     runs-on: ubuntu-latest
     steps:
+      - name: Repo url
+        run: echo "REPO=git@github.com:karelhala/github-actions-playground-build.git" >> $GITHUB_ENV
+      - name: Test repo url
+        run: echo ${{ env.REPO }}
+  Pull-release-sh:
+    needs: [set-env]
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
+      - name: Test repo url
+        run: echo ${{ env.REPO }}
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/scripts/*
