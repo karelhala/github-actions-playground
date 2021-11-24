@@ -44,5 +44,5 @@ jobs:
       - uses: actions/cache@v2
         id: restore-build
         with:
-          path: ./build
+          path: ./build/*
           key: ${{ github.sha }}
