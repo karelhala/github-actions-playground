@@ -5,15 +5,45 @@ on:
     types:
       - completed
 jobs:
-  Pull-release-sh:
+  pull-release:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Pull the file
+        run: curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/release.sh > ./scripts/release.sh
+      - run: chmod +x "${GITHUB_WORKSPACE}/scripts/quay_push.sh"
+      - uses: actions/cache@v2
+        id: restore-scripts
         with:
-          node-version: '16.x'
-          cache: 'npm'
+          path: ${{ github.workspace }}/scripts/release.sh
+          key: ${{ github.sha }}
+  pull-jenkins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Pull the file
+        run: curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/Jenkinsfile > ./.travis/58231b16fdee45a03a4ee3cf94a9f2c3
+      - uses: actions/cache@v2
+        id: restore-scripts
+        with:
+          path: ${{ github.workspace }}/.travis/58231b16fdee45a03a4ee3cf94a9f2c3
+          key: ${{ github.sha }}
+  Pull-release-sh:
+    needs: [pull-release, pull-jenkins]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        id: restore-scripts
+        with:
+          path: ${{ github.workspace }}/scripts/release.sh
+          key: ${{ github.sha }}-release
+      - uses: actions/cache@v2
+        id: restore-scripts
+        with:
+          path: ${{ github.workspace }}/.travis/58231b16fdee45a03a4ee3cf94a9f2c3
+          key: ${{ github.sha }}
       - uses: actions/cache@v2
         id: restore-build
         with:
@@ -22,4 +52,3 @@ jobs:
       - name: List files in the repository
         run: |
           ls -lah ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
