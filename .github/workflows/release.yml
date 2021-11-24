@@ -37,10 +37,18 @@ jobs:
       - run: echo "REPO=git@github.com:karelhala/github-actions-playground-build.git" >> $GITHUB_ENV
       - run: echo "TRAVIS_BRANCH=$GITHUB_REF_NAME" >> $GITHUB_ENV
       - run: echo "TRAVIS_BUILD_NUMBER=$GITHUB_JOB" >> $GITHUB_ENV
-      - run: echo "COMMIT_AUTHOR_USERNAME=$GITHUB_ACTOR" >> $GITHUB_ENV
-      - run: echo "COMMIT_AUTHOR_EMAIL=$GITHUB_JOB" >> $GITHUB_ENV
-      - run: eval `ssh-agent -s`
-      - run: ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+      - run: echo "COMMIT_AUTHOR_USERNAME='GitHub actions'" >> $GITHUB_ENV
+      - run: echo "COMMIT_AUTHOR_EMAIL=actions@github.com" >> $GITHUB_ENV
+      - name: Add SSH key
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+            mkdir -p /home/runner/.ssh
+            ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/.ssh/github_actions
+            chmod 600 /home/runner/.ssh/github_actions
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null   
+            ssh-add /home/runner/.ssh/github_actions
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/scripts/*
