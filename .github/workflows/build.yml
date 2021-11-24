@@ -45,5 +45,20 @@ jobs:
       - uses: actions/cache@v2
         id: restore-build
         with:
-          path: ./build/*
+          path: ${{ github.workspace }}/build/*
           key: ${{ github.sha }}
+  cache-use-build:
+    name: Re-use Cache
+    runs-on: ubuntu-latest
+    needs: [build-files]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - uses: actions/cache@v2
+        id: restore-build
+        with:
+          path: ${{ github.workspace }}/build/*
+          key: ${{ github.sha }}
+      - run: ls -lah .
