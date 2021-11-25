@@ -145,7 +145,8 @@ jobs:
           key: ${{ github.sha }}-released
       - name: List dist folder
         run: ls -lah ${{ github.workspace }}/dist
-      - run: |
+      - name: Set env variables
+        run: |
           echo "SRC_HASH=`git rev-parse --verify HEAD`" >> $GITHUB_ENV
           echo "GIT_BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
       - name: Deploy to quay
