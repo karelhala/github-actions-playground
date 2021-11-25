@@ -1,4 +1,4 @@
-name: Push to build repo
+name: Release workflow
 on:
   workflow_run:
     workflows: ['Build and test']
@@ -56,7 +56,7 @@ jobs:
         with:
           path: /home/runner/.ssh/*
           key: ${{ github.sha }}-ssh
-  Run-release-sh:
+  Release-to-build:
     needs: [pull-scripts, pull-jenkins, set-ssh]
     runs-on: ubuntu-latest
     env:
@@ -91,4 +91,19 @@ jobs:
           key: ${{ github.sha }}
       - name: Run the deploy
         run: ${{ github.workspace }}/scripts/release.sh ci-beta
+      - uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/dist/*
+          key: ${{ github.sha }}-released
+  Run-release-image:
+    needs: [Release-to-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/dist/*
+          key: ${{ github.sha }}-released
+      - name: Check the build repo
+        run: ls -lah ${{ github.workspace }}/dist
 
