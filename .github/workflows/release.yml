@@ -40,6 +40,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: echo "TRAVIS_BRANCH=$GITHUB_REF_NAME" >> $GITHUB_ENV
       - run: echo "TRAVIS_BUILD_NUMBER=$GITHUB_RUN_ID" >> $GITHUB_ENV
+      - run: git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
       - name: Add SSH key
         env:
             SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -63,7 +64,5 @@ jobs:
         with:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}
-      - name: List scripts
-        run: ls -lah ./scripts
       - name: Run the deploy
         run: ${{ github.workspace }}/scripts/release.sh ci-beta
