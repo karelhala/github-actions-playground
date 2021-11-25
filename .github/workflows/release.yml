@@ -39,6 +39,7 @@ jobs:
       REPO: git@github.com:karelhala/github-actions-playground-build.git
       COMMIT_AUTHOR_USERNAME: GitHub actions
       COMMIT_AUTHOR_EMAIL: actions@github.com
+      BRANCH: ci-beta
     steps:
       - uses: actions/checkout@v2
       - run: echo "TRAVIS_BRANCH=$GITHUB_REF_NAME" >> $GITHUB_ENV
@@ -75,6 +76,7 @@ jobs:
             git init
             git remote add origin ${REPO}
             git add -A
+            git checkout -b ${BRANCH}
             git commit --allow-empty -m 'Initial commit'
-            GIT_SSH_COMMAND='ssh -i /home/runner/.ssh/github_actions' git push
+            GIT_SSH_COMMAND='ssh -i /home/runner/.ssh/github_actions' git push --set-upstream origin ${BRANCH}
 
