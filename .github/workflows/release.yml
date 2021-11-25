@@ -127,7 +127,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_NAME: test-frontend
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -154,7 +153,7 @@ jobs:
 
           docker tag ${APP_NAME} quay.io/redhat-cloud-services/${APP_NAME}:${GIT_BRANCH}
 
-          echo $DOCKER_TOKEN | docker login quay.io --username \$oauthtoken --password-stdin
+          echo ${{ secrets.DOCKER_TOKEN }} | docker login quay.io --username \$oauthtoken --password-stdin
 
           docker push quay.io/redhat-cloud-services/${APP_NAME}
           docker push quay.io/redhat-cloud-services/${APP_NAME}:${SRC_HASH}
