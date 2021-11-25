@@ -2,6 +2,9 @@ name: Push to build repo
 on:
   workflow_run:
     workflows: ['Build and test']
+    branches:
+      - main
+      - master
     types:
       - completed
 jobs:
@@ -65,4 +68,13 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}
       - name: Run the deploy
-        run: ${{ github.workspace }}/scripts/release.sh ci-beta
+        run: |
+            cd ./dist
+            git config --global user.name ${COMMIT_AUTHOR_USERNAME}
+            git config --global user.email ${COMMIT_AUTHOR_EMAIL}
+            git init
+            git remote add origin ${REPO}
+            git add -A
+            git commit --allow-empty -m 'Initial commit'
+            GIT_SSH_COMMAND='ssh -i /home/runner/.ssh/github_actions' git push
+
