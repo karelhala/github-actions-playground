@@ -92,7 +92,10 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}
       - name: Run the deploy
-        run: ${{ github.workspace }}/scripts/release.sh "ci-beta qa-beta stage-beta"
+        run: |
+          ${{ github.workspace }}/scripts/release.sh ci-beta
+          ${{ github.workspace }}/scripts/release.sh qa-beta
+          ${{ github.workspace }}/scripts/release.sh stage-beta
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/dist/*
