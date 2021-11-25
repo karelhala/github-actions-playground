@@ -126,7 +126,7 @@ jobs:
     needs: [Run-generate-image, Release-to-build]
     runs-on: ubuntu-latest
     env:
-      APP_NAME: hac-core-frontend
+      APP_NAME: test-frontend
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
       - uses: actions/checkout@v2
@@ -143,10 +143,21 @@ jobs:
       - run: |
           echo "SRC_HASH=`git rev-parse --verify HEAD`" >> $GITHUB_ENV
           echo "GIT_BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-      - name: Verify env vars
+      - name: Deploy to quay
         run: |
-          echo $GIT_BRANCH
-          echo $APP_NAME
-          echo $SRC_HASH
+          cd ${{ github.workspace }}/dist
+          docker build . -t ${APP_NAME}
+
+          docker tag ${APP_NAME} quay.io/redhat-cloud-services/${APP_NAME}
+
+          docker tag ${APP_NAME} quay.io/redhat-cloud-services/${APP_NAME}:${SRC_HASH}
+
+          docker tag ${APP_NAME} quay.io/redhat-cloud-services/${APP_NAME}:${GIT_BRANCH}
+
+          echo $DOCKER_TOKEN | docker login quay.io --username \$oauthtoken --password-stdin
+
+          docker push quay.io/redhat-cloud-services/${APP_NAME}
+          docker push quay.io/redhat-cloud-services/${APP_NAME}:${SRC_HASH}
+          docker push quay.io/redhat-cloud-services/${APP_NAME}:${GIT_BRANCH}
       
 
