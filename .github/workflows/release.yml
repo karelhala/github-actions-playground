@@ -98,7 +98,7 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}-released
   Run-generate-image:
-    needs: [pull-scripts, pull-jenkins]
+    needs: pull-scripts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -125,6 +125,9 @@ jobs:
   Run-build-and-publish:
     needs: [Run-generate-image, Release-to-build]
     runs-on: ubuntu-latest
+    env:
+      APP_NAME: hac-core-frontend
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -137,4 +140,13 @@ jobs:
           key: ${{ github.sha }}-released
       - name: List dist folder
         run: ls -lah ${{ github.workspace }}/dist
+      - run: |
+          echo "SRC_HASH=`git rev-parse --verify HEAD`" >> $GITHUB_ENV
+          echo "GIT_BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+      - name: Verify env vars
+        run: |
+          echo $GIT_BRANCH
+          echo $APP_NAME
+          echo $SRC_HASH
+      
 
