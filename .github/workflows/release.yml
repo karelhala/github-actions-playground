@@ -28,6 +28,7 @@ jobs:
           path: ${{ github.workspace }}/scripts/*
           key: ${{ github.sha }}-scripts
   pull-jenkins:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -39,6 +40,7 @@ jobs:
           path: ${{ github.workspace }}/.travis/58231b16fdee45a03a4ee3cf94a9f2c3
           key: ${{ github.sha }}-travis
   set-ssh:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Add SSH key
@@ -95,15 +97,28 @@ jobs:
         with:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}-released
-  Run-release-image:
+  Run-generate-image:
     needs: [Release-to-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: |
+          echo "TRAVIS_BRANCH=$GITHUB_REF_NAME" >> $GITHUB_ENV
+          echo "APP_ROOT=${{ github.workspace }}/dist" >> $GITHUB_ENV
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}-released
+      - uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/scripts/*
+          key: ${{ github.sha }}-scripts
+      - name: Generate configs
+        run: ${{ github.workspace }}/scripts/nginx_conf_gen.sh
       - name: Check the build repo
         run: ls -lah ${{ github.workspace }}/dist
+      - name: Check nginx
+        run: cat ${{ github.workspace }}/dist/nginx.conf
+      - name: Check Dockerfile
+        run: cat ${{ github.workspace }}/dist/Dockerfile
 
