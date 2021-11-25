@@ -98,7 +98,7 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}-released
   Run-generate-image:
-    needs: [Release-to-build]
+    needs: [pull-scripts, pull-jenkins, set-ssh]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -107,18 +107,29 @@ jobs:
           echo "APP_ROOT=${{ github.workspace }}/dist" >> $GITHUB_ENV
       - uses: actions/cache@v2
         with:
-          path: ${{ github.workspace }}/dist/*
-          key: ${{ github.sha }}-released
-      - uses: actions/cache@v2
-        with:
           path: ${{ github.workspace }}/scripts/*
           key: ${{ github.sha }}-scripts
       - name: Generate configs
         run: ${{ github.workspace }}/scripts/nginx_conf_gen.sh
       - name: Check the build repo
         run: ls -lah ${{ github.workspace }}/dist
-      - name: Check nginx
-        run: cat ${{ github.workspace }}/dist/nginx.conf
-      - name: Check Dockerfile
-        run: cat ${{ github.workspace }}/dist/Dockerfile
+      - uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/dist/*
+          key: ${{ github.sha }}-docker-conf
+  Run-build-and-publish:
+    needs: [Run-generate-image, Release-to-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/dist/*
+          key: ${{ github.sha }}-docker-conf
+      - uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/dist/*
+          key: ${{ github.sha }}-released
+      - name: List dist folder
+        run: ls -lah ${{ github.workspace }}/dist
 
