@@ -64,10 +64,10 @@ jobs:
     env:
       COMMIT_AUTHOR_USERNAME: GitHub actions
       COMMIT_AUTHOR_EMAIL: actions@github.com
-      BRANCH: ci-beta qa-beta stage-beta
     steps:
       - uses: actions/checkout@v2
-      - run: |
+      - name: Set env variables
+        run: |
           echo "TRAVIS_BRANCH=$GITHUB_REF_NAME" >> $GITHUB_ENV
           echo "TRAVIS_BUILD_NUMBER=$GITHUB_RUN_ID" >> $GITHUB_ENV
           echo ${{ github.event.head_commit.message }}
@@ -92,7 +92,7 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}
       - name: Run the deploy
-        run: ${{ github.workspace }}/scripts/release.sh $BRANCH
+        run: ${{ github.workspace }}/scripts/release.sh "ci-beta qa-beta stage-beta"
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/dist/*
