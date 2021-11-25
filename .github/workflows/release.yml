@@ -62,10 +62,9 @@ jobs:
     needs: [pull-scripts, pull-jenkins, set-ssh]
     runs-on: ubuntu-latest
     env:
-      REPO: git@github.com:karelhala/github-actions-playground-build.git
       COMMIT_AUTHOR_USERNAME: GitHub actions
       COMMIT_AUTHOR_EMAIL: actions@github.com
-      BRANCH: ci-beta
+      BRANCH: ci-beta qa-beta stage-beta
     steps:
       - uses: actions/checkout@v2
       - run: |
@@ -73,6 +72,7 @@ jobs:
           echo "TRAVIS_BUILD_NUMBER=$GITHUB_RUN_ID" >> $GITHUB_ENV
           echo ${{ github.event.head_commit.message }}
           echo "TRAVIS_COMMIT_MESSAGE=`git log -1 --pretty=format:"%s"`" >> $GITHUB_ENV
+          echo "REPO=`node -e 'console.log(require("./package.json").insights.buildrepo)'`" >> $GITHUB_ENV
       - run: git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
       - uses: actions/cache@v2
         with:
@@ -92,7 +92,7 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}
       - name: Run the deploy
-        run: ${{ github.workspace }}/scripts/release.sh ci-beta
+        run: ${{ github.workspace }}/scripts/release.sh $BRANCH
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/dist/*
