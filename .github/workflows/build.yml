@@ -1,9 +1,5 @@
 name: Build and test
-on:
-  push:
-      branches:
-        - main
-        - master
+on: [push]
 jobs:
   install-dependencies:
     runs-on: ubuntu-latest
