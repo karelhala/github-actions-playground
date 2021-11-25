@@ -36,13 +36,10 @@ jobs:
       REPO: git@github.com:karelhala/github-actions-playground-build.git
       COMMIT_AUTHOR_USERNAME: GitHub actions
       COMMIT_AUTHOR_EMAIL: actions@github.com
-
     steps:
       - uses: actions/checkout@v2
       - run: echo "TRAVIS_BRANCH=$GITHUB_REF_NAME" >> $GITHUB_ENV
-      - run: echo "TRAVIS_BUILD_NUMBER=$GITHUB_JOB" >> $GITHUB_ENV
-      - run: echo $TEST_ENV
-      - run: echo $GITHUB_RUN_ID
+      - run: echo "TRAVIS_BUILD_NUMBER=$GITHUB_RUN_ID" >> $GITHUB_ENV
       - name: Add SSH key
         env:
             SSH_AUTH_SOCK: /tmp/ssh_agent.sock
