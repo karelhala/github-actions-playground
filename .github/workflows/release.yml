@@ -55,6 +55,11 @@ jobs:
             chmod 600 /home/runner/.ssh/github_actions
             ssh-agent -a $SSH_AUTH_SOCK > /dev/null   
             ssh-add /home/runner/.ssh/github_actions
+            echo "Host github.com
+              HostName github.com
+              User git
+              AddKeysToAgent yes
+              IdentityFile /home/runner/.ssh/github_actions" >> /home/runner/.ssh/config
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/scripts/*
@@ -69,14 +74,5 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}
       - name: Run the deploy
-        run: |
-            cd ./dist
-            git config --global user.name ${COMMIT_AUTHOR_USERNAME}
-            git config --global user.email ${COMMIT_AUTHOR_EMAIL}
-            git init
-            git remote add origin ${REPO}
-            git add -A
-            git checkout -b ${BRANCH}
-            git commit --allow-empty -m 'Initial commit'
-            GIT_SSH_COMMAND='ssh -i /home/runner/.ssh/github_actions' git push --set-upstream origin ${BRANCH}
+        run: ${{ github.workspace }}/scripts/release.sh ci-beta
 
