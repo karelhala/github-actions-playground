@@ -94,8 +94,11 @@ jobs:
       - name: Run the deploy
         run: |
           ${{ github.workspace }}/scripts/release.sh ci-beta
+          rm -rf ${{ github.workspace }}/dist/.git
           ${{ github.workspace }}/scripts/release.sh qa-beta
+          rm -rf ${{ github.workspace }}/dist/.git
           ${{ github.workspace }}/scripts/release.sh stage-beta
+          rm -rf ${{ github.workspace }}/dist/.git
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/dist/*
