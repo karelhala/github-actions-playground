@@ -2,9 +2,7 @@ name: Release workflow
 on:
   workflow_run:
     workflows: ['Build and test']
-    branches:
-      - main
-      - master
+    branches: [main, master, ci-beta, qa-beta, stage-beta, prod-stable, ci-stable, qa-stable, stage-stable, prod-stable]
     types:
       - completed
 jobs:
@@ -92,13 +90,7 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           key: ${{ github.sha }}
       - name: Run the deploy
-        run: |
-          ${{ github.workspace }}/scripts/release.sh ci-beta
-          rm -rf ${{ github.workspace }}/dist/.git
-          ${{ github.workspace }}/scripts/release.sh qa-beta
-          rm -rf ${{ github.workspace }}/dist/.git
-          ${{ github.workspace }}/scripts/release.sh stage-beta
-          rm -rf ${{ github.workspace }}/dist/.git
+        run: ${{ github.workspace }}/custom_release.sh
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/dist/*
