@@ -131,8 +131,6 @@ jobs:
   Run-build-and-publish:
     needs: [Run-generate-image, Release-to-build]
     runs-on: ubuntu-latest
-    env:
-      APP_NAME: test-frontend
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -151,6 +149,7 @@ jobs:
           echo "GIT_BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
       - name: Deploy to quay
         run: |
+          APP_NAME=`node -e 'console.log(require("./package.json").imagename || require("./package.json").insights.appname)'`
           cd ${{ github.workspace }}/dist
           docker build . -t ${APP_NAME}
 
