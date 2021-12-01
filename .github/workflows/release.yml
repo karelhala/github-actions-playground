@@ -14,13 +14,13 @@ jobs:
       - run: mkdir ${{ github.workspace }}/scripts
       - name: Pull release file
         run: curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/release.sh > ${{ github.workspace }}/scripts/release.sh
-      - run: chmod +x "${GITHUB_WORKSPACE}/scripts/release.sh"
+      - run: chmod +x "${{ github.workspace }}/scripts/release.sh"
       - name: Pull nginx conf file
-        run: curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/nginx_conf_gen.sh > ./scripts/nginx_conf_gen.sh
-      - run: chmod +x "${GITHUB_WORKSPACE}/scripts/nginx_conf_gen.sh"
+        run: curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/nginx_conf_gen.sh > ${{ github.workspace }}/scripts/nginx_conf_gen.sh
+      - run: chmod +x "${{ github.workspace }}/scripts/nginx_conf_gen.sh"
       - name: Pull quay push file
-        run: curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/quay_push.sh > ./scripts/quay_push.sh
-      - run: chmod +x "${GITHUB_WORKSPACE}/scripts/quay_push.sh"
+        run: curl -sSL https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master/src/quay_push.sh > ${{ github.workspace }}/scripts/quay_push.sh
+      - run: chmod +x "${{ github.workspace }}/scripts/quay_push.sh"
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/scripts/*
@@ -70,7 +70,7 @@ jobs:
           echo "TRAVIS_BUILD_NUMBER=$GITHUB_RUN_ID" >> $GITHUB_ENV
           echo ${{ github.event.head_commit.message }}
           echo "TRAVIS_COMMIT_MESSAGE=`git log -1 --pretty=format:"%s"`" >> $GITHUB_ENV
-          echo "REPO=`node -e 'console.log(require("./package.json").insights.buildrepo)'`" >> $GITHUB_ENV
+          echo "REPO=`node -e 'console.log(require("${{ github.workspace }}/package.json").insights.buildrepo)'`" >> $GITHUB_ENV
       - run: git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
       - uses: actions/cache@v2
         with:
